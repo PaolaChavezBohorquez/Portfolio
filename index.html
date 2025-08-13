@@ -13,6 +13,7 @@
 
 	<!-- Favicon -->
 	<link rel="shortcut icon" href="http://www.iconj.com/ico/0/6/065fnlyo8s.ico" type="image/x-icon" />
+	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
 	<!-- Scripts -->
 	<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -28,16 +29,123 @@
 			</a>
 		</div>
 
+		<!-- 1 cambio para lo que es animacion  -->
+
+		<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+<style>
+  .typed-cursor {
+    color: white;
+    opacity: 1;
+    animation: blink 0.7s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+</style>
+
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-gray-900">
+
+<h3 class="text-white text-sm font-bold">
+  Hola, mi nombre es Paola
+  Soy <span id="typed" style="color: hwb(60 0% 0%);"></span>
+</h3>
+
+<script>
+  var typed = new Typed("#typed", {
+    strings: ["Especialista en Marketing" , "Gestora de Marcas" , "Web Development"],
+    typeSpeed: 100,
+    backSpeed: 100,
+    backDelay: 1000,
+    loop: true
+  });
+</script>
+
+	<!-- se termina el 1er comentario de la animacion de tipeo  -->
+	 
+
+		<!-- se termina el 2do comentario de la animacion de iluminacion  -->
+
+
 		<div id="menu_icon"></div>
 
-		<nav>
-			<ul>
-				<li><a href="index.html" class="selected">Proyectos</a></li>
-				<li><a href="marcas.html">Marcas</a></li>
-				<li><a href="sobremi.html">Sobre mí</a></li>
-				<li><a href="contacto.html">Contacto</a></li>
-			</ul>
-		</nav>
+<style>
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+nav ul li a {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  font-weight: normal;
+  font-size: 1.1rem;
+}
+
+nav ul li a:hover {
+  color: #f97316;
+  text-shadow: 0 0 8px #f97316;
+}
+
+nav ul li a.selected {
+  color: #f97316;
+  font-weight: bold;
+}
+</style>
+
+<nav>
+  <ul>
+    <li><a href="index.html" class="selected">Proyectos</a></li>
+    <li><a href="marcas.html">Marcas</a></li>
+    <li><a href="sobremi.html">Sobre mí</a></li>
+    <li><a href="contacto.html">Contacto</a></li>
+  </ul>
+</nav>
+<!-- se termina el 2do comentario de la animacion de iluminacion  -->
+ <!-- comienza 3er comentario de la animacion de iluminacion  -->
+		<style>
+.home-sci a i {
+  color: #e90b0b;
+  transition: color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+
+.home-sci a:hover i {
+  color: #f97316;
+  filter: drop-shadow(0 0 5px #f97316);
+  transform: scale(1.2);
+}
+</style>
+
+<div class="home-sci">
+  <a href="https://www.linkedin.com/in/paola-chavez-bohorquez/" style="--i:7" target="_blank"><i class='bx bxl-linkedin'></i></a>
+  <a href="https://github.com/Paolachavezbohorquez/" style="--i:8" target="_blank"><i class='bx bxl-github'></i></a>
+  <a href="https://instagram.com/midhun_021" style="--i:9" target="_blank"><i class='bx bxl-behance'></i></a>
+  <a href="https://drive.google.com/file/d/15YG8w9cSZGlUiXDp_OyEVK9Yq2HHVx19/view?usp=sharing" style="--i:10" target="_blank"><i class='bx bxl-whatsapp'></i></a>
+</div>
+
+		
+<style>
+.home-sci a i {
+  color: #ffffff;
+  font-size: 40px;
+  transition: color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+
+.home-sci a:hover i {
+  color: #f3dc0e;
+  filter: drop-shadow(0 0 5px #f97316);
+  transform: scale(1.2);
+}
+</style>
+
+<!-- se termina el 3do comentario de la animacion de iluminacion  -->
 
 		<div class="footer clearfix">
 			<div class="rights">
@@ -45,7 +153,7 @@
 			</div>
 		</div>
 	</header>
-
+	
 	<section class="main clearfix">
 
 		<div class="work">
@@ -140,6 +248,7 @@
 
 </body>
 </html>
+
 
 
 
