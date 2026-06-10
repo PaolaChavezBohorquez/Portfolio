@@ -1,1 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Isla Escondida — Paola Chávez Bohorquez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#FF3D7F;--cyan:#00E5CC;--gold:#FFD166;--purple:#B44FFF;--green:#3DFF8F;--blue:#3D8FFF;--orange:#FF7A3D;--dark:#080810;--dark2:#0D0D1A;--dark3:#12121F;--white:#F5F0FF;--muted:rgba(245,240,255,0.45);--accent:var(--pink)}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--white);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);background:var(--pink);mix-blend-mode:difference}
+.cursor-ring{position:fixed;width:38px;height:38px;border:1.5px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .15s ease;mix-blend-mode:difference}
+#stars-canvas,#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(8,8,16,.95),transparent);backdrop-filter:blur(6px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.18em;background:linear-gradient(135deg,var(--pink),var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:gradShift 4s ease infinite;text-decoration:none}
+.nav-back{font-size:10.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:color .2s;cursor:none}
+.nav-back:hover{color:var(--cyan)}
+
+/* SIDE NAV */
+.side-nav{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:150;display:flex;flex-direction:column;gap:.75rem}
+.side-dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(245,240,255,.25);cursor:pointer;transition:all .2s;position:relative}
+.side-dot:hover,.side-dot.active{background:var(--pink);border-color:var(--pink);box-shadow:0 0 10px rgba(255,61,127,.5)}
+.side-dot::after{content:attr(data-label);position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.side-dot:hover::after{opacity:1}
+
+/* HERO */
+.project-hero{min-height:75vh;display:flex;align-items:flex-end;padding:8rem 4rem 4rem;position:relative;z-index:2;overflow:hidden}
+.project-hero-bg{position:absolute;inset:0;z-index:0}
+.project-hero-img{width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.3)}
+.project-hero-gradient{position:absolute;inset:0;background:linear-gradient(to top,var(--dark) 0%,rgba(8,8,16,.5) 60%,transparent 100%)}
+.project-hero-content{position:relative;z-index:2;max-width:700px}
+.project-back-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+.project-back-tag::before{content:'';display:block;width:30px;height:1px;background:var(--accent)}
+.project-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6rem);letter-spacing:.04em;line-height:.95;margin-bottom:1rem;background:linear-gradient(90deg,var(--white),var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.project-tagline{font-size:16px;line-height:1.7;color:var(--muted);max-width:500px;margin-bottom:1.5rem}
+
+/* SCROLL INDICATOR */
+.scroll-hint{display:flex;align-items:center;gap:.75rem;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.scroll-line{width:40px;height:1px;background:linear-gradient(90deg,var(--pink),var(--cyan));animation:scrollPulse 2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleX(.8)}50%{opacity:1;transform:scaleX(1)}}
+
+/* META */
+.project-meta{display:flex;gap:3rem;flex-wrap:wrap;padding:2.5rem 4rem;border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2}
+.meta-item{}
+.meta-label{font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.meta-value{font-size:14px;font-weight:400;color:var(--white)}
+
+/* NEON DIVIDER */
+.neon-divider{height:1px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),var(--purple),transparent);opacity:.3;position:relative;z-index:2;margin:0}
+
+/* SECTION WRAPPER */
+.sec{padding:5rem 4rem;position:relative;z-index:2}
+.sec-sm{padding:3rem 4rem;position:relative;z-index:2}
+.sec-label{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:.08em;margin-bottom:1.5rem;background:linear-gradient(90deg,var(--white) 60%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sec-body{font-size:15px;line-height:1.9;color:var(--muted);max-width:700px}
+.sec-body strong{color:var(--white);font-weight:500}
+.sec-body p{margin-bottom:1rem}
+
+/* ── DISEÑO GRÁFICO ─────────────────────────────── */
+.design-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.design-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.design-card:hover{border-color:var(--pink);box-shadow:0 0 20px rgba(255,61,127,.15)}
+.design-card-img{aspect-ratio:1;overflow:hidden;position:relative}
+.design-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.design-card:hover .design-card-img img{transform:scale(1.05)}
+.design-card-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--dark3);gap:.5rem;min-height:200px}
+.ph-icon{font-size:2rem;opacity:.25}
+.ph-text{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);opacity:.5;text-align:center;padding:0 1rem}
+.design-card-info{padding:1rem}
+.design-card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:.25rem}
+.design-card-name{font-size:14px;color:var(--white)}
+
+/* ── VIDEO SECTION ──────────────────────────────── */
+.video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:2rem}
+.video-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.video-card:hover{border-color:var(--purple);box-shadow:0 0 24px rgba(180,79,255,.2)}
+.video-embed{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:var(--dark3)}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--dark3)}
+.video-play-icon{width:56px;height:56px;border-radius:50%;border:1.5px solid rgba(180,79,255,.5);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--purple)}
+.video-ph-text{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);opacity:.5}
+.video-card-info{padding:1.25rem}
+.video-card-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);margin-bottom:.25rem}
+.video-card-title{font-size:14px;color:var(--white);margin-bottom:.25rem}
+.video-card-views{font-size:11px;color:var(--muted)}
+
+/* ── REDES SOCIALES — STATS ─────────────────────── */
+.stats-overview{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem;margin-bottom:3rem}
+.stat-box{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:1.5rem;text-align:center;transition:border-color .3s}
+.stat-box:hover{border-color:var(--cyan)}
+.stat-box-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.stat-box-label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.35rem}
+
+.chart-wrap{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:2rem;margin-top:1.5rem}
+.chart-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.1em;color:var(--white);margin-bottom:.25rem}
+.chart-sub{font-size:11.5px;color:var(--muted);margin-bottom:1.5rem}
+.chart-canvas-wrap{position:relative;height:280px}
+
+/* ── PERFIL CONSUMIDOR ───────────────────────────── */
+.consumer-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.consumer-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:1.75rem;transition:border-color .3s}
+.consumer-card:hover{border-color:var(--gold);box-shadow:0 0 18px rgba(255,209,102,.12)}
+.consumer-card-icon{font-size:2rem;margin-bottom:.75rem}
+.consumer-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.08em;color:var(--gold);margin-bottom:.75rem}
+.consumer-card-body{font-size:14px;line-height:1.75;color:var(--muted)}
+.consumer-card-body li{margin-bottom:.4rem;list-style:none;padding-left:1.2rem;position:relative}
+.consumer-card-body li::before{content:'→';position:absolute;left:0;color:var(--gold);font-size:.8rem}
+
+.persona-wrap{display:grid;grid-template-columns:200px 1fr;gap:2rem;align-items:center;background:var(--dark2);border:1px solid rgba(255,209,102,.15);border-radius:4px;padding:2rem;margin-top:2rem}
+.persona-avatar{width:200px;height:200px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,209,102,.3);position:relative}
+.persona-avatar img{width:100%;height:100%;object-fit:cover}
+.persona-avatar-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--dark3);font-size:3rem;opacity:.3}
+.persona-details{}
+.persona-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.08em;color:var(--gold)}
+.persona-age{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.persona-traits{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.persona-trait{padding:4px 12px;border-radius:2px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(255,209,102,.3);color:var(--gold);background:rgba(255,209,102,.06)}
+.persona-quote{font-style:italic;font-size:14px;color:var(--muted);border-left:2px solid var(--gold);padding-left:1rem}
+
+/* ── PACKAGING / DELIVERY ────────────────────────── */
+.pack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2rem}
+.pack-item{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.pack-item:hover{border-color:var(--orange);box-shadow:0 0 20px rgba(255,122,61,.15)}
+.pack-img{aspect-ratio:4/3;overflow:hidden;position:relative}
+.pack-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.pack-item:hover .pack-img img{transform:scale(1.05)}
+.pack-label{padding:.875rem;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange)}
+
+/* ── ROI / VENTAS ────────────────────────────────── */
+.roi-hero{background:linear-gradient(135deg,rgba(255,61,127,.08),rgba(0,229,204,.06));border:1px solid rgba(255,61,127,.2);border-radius:4px;padding:3rem;margin-top:2rem;text-align:center;position:relative;overflow:hidden}
+.roi-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(255,61,127,.1),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(0,229,204,.08),transparent 60%)}
+.roi-main-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,10vw,8rem);letter-spacing:.04em;background:linear-gradient(135deg,var(--gold),var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;position:relative;z-index:1}
+.roi-main-label{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.5rem;position:relative;z-index:1}
+.roi-sub{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--white);margin-top:.5rem;position:relative;z-index:1}
+
+.sales-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.sales-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:1.5rem;transition:border-color .3s}
+.sales-card:hover{border-color:var(--green)}
+.sales-card-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--green);line-height:1}
+.sales-card-label{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.sales-card-sub{font-size:12.5px;color:rgba(245,240,255,.6);margin-top:.5rem}
+
+/* ── TIKTOK ──────────────────────────────────────── */
+.tiktok-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:2rem}
+.tiktok-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.tiktok-card:hover{border-color:var(--cyan);box-shadow:0 0 20px rgba(0,229,204,.15)}
+.tiktok-thumb{aspect-ratio:9/16;overflow:hidden;position:relative;max-height:320px}
+.tiktok-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.tiktok-card:hover .tiktok-thumb img{transform:scale(1.05)}
+.tiktok-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.tiktok-play{width:48px;height:48px;border-radius:50%;background:rgba(0,229,204,.2);border:1.5px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:transform .2s}
+.tiktok-card:hover .tiktok-play{transform:scale(1.1)}
+.tiktok-info{padding:1rem}
+.tiktok-views{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--cyan)}
+.tiktok-desc{font-size:12px;color:var(--muted);margin-top:.25rem}
+.tiktok-link{display:inline-flex;align-items:center;gap:.4rem;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);text-decoration:none;margin-top:.5rem;transition:opacity .2s}
+.tiktok-link:hover{opacity:.7}
+
+.bts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+.bts-item{aspect-ratio:1;border-radius:4px;overflow:hidden;border:1px solid rgba(255,255,255,.06);position:relative;transition:border-color .3s}
+.bts-item:hover{border-color:var(--purple)}
+.bts-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s,filter .4s}
+.bts-item:hover img{transform:scale(1.06);filter:brightness(1.1)}
+
+/* ── INFLUENCERS ─────────────────────────────────── */
+.influencer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-top:2rem}
+.influencer-card{background:var(--dark2);border:1px solid rgba(255,255,255,.06);border-radius:4px;overflow:hidden;text-align:center;transition:border-color .3s,box-shadow .3s;text-decoration:none;color:inherit;cursor:none}
+.influencer-card:hover{border-color:var(--pink);box-shadow:0 0 20px rgba(255,61,127,.15)}
+.influencer-photo{aspect-ratio:1;overflow:hidden;position:relative}
+.influencer-photo img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .4s,filter .4s}
+.influencer-card:hover .influencer-photo img{transform:scale(1.05);filter:brightness(1.05)}
+.influencer-info{padding:1rem}
+.influencer-name{font-size:13.5px;font-weight:500;color:var(--white);margin-bottom:.2rem}
+.influencer-handle{font-size:11px;color:var(--pink);letter-spacing:.05em}
+.influencer-reach{font-size:11px;color:var(--muted);margin-top:.25rem}
+
+/* ── GALLERY ──────────────────────────────────────── */
+.gallery-masonry{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.gal-item{border-radius:4px;overflow:hidden;border:1px solid rgba(255,255,255,.06);position:relative;cursor:zoom-in;transition:transform .3s,box-shadow .3s}
+.gal-item:hover{transform:scale(1.02);box-shadow:0 0 24px rgba(255,61,127,.18)}
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block}
+.gal-tall{grid-row:span 2}
+.gal-wide{grid-column:span 2}
+
+/* PLACEHOLDERS GENÉRICOS */
+.img-ph{width:100%;height:100%;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;background:var(--dark3)}
+.img-ph-icon{font-size:1.8rem;opacity:.2}
+.img-ph-text{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);opacity:.4;text-align:center;padding:0 .75rem;line-height:1.5}
+
+/* NAV BETWEEN PROJECTS */
+.project-nav{display:flex;justify-content:space-between;padding:3rem 4rem;border-top:1px solid rgba(255,255,255,.06);position:relative;z-index:2}
+.project-nav-btn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:.5rem;transition:color .2s;cursor:none}
+.project-nav-btn:hover{color:var(--white)}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(8,8,16,.96);z-index:500;display:none;align-items:center;justify-content:center;padding:2rem}
+.lightbox.active{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px}
+.lightbox-close{position:absolute;top:2rem;right:2rem;font-size:2rem;color:var(--muted);cursor:pointer;transition:color .2s;line-height:1}
+.lightbox-close:hover{color:var(--white)}
+
+footer{padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06);position:relative;z-index:2}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.15em;background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-copy{font-size:10.5px;letter-spacing:.12em;color:var(--muted)}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+@media(max-width:768px){
+  .side-nav{display:none}
+  nav,footer,.project-meta{padding-left:1.25rem;padding-right:1.25rem}
+  .sec,.sec-sm{padding-left:1.25rem;padding-right:1.25rem}
+  .project-hero{padding:6rem 1.25rem 2.5rem}
+  .stats-overview,.sales-grid{grid-template-columns:1fr 1fr}
+  .design-grid,.tiktok-grid,.influencer-grid,.bts-grid{grid-template-columns:1fr 1fr}
+  .pack-grid,.video-grid,.consumer-grid{grid-template-columns:1fr}
+  .gallery-masonry{grid-template-columns:1fr 1fr}
+  .gal-wide,.gal-tall{grid-column:auto;grid-row:auto}
+  .persona-wrap{grid-template-columns:1fr}
+  .project-nav{padding:2rem 1.25rem;flex-direction:column;gap:1rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<canvas id="bg-canvas"></canvas>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curR"></div>
+
+<!-- SIDE NAV -->
+<nav class="side-nav" id="sideNav">
+  <div class="side-dot active" data-label="Inicio" data-target="hero" onclick="scrollTo('s-hero')"></div>
+  <div class="side-dot" data-label="Diseño Gráfico" data-target="design" onclick="scrollTo('s-design')"></div>
+  <div class="side-dot" data-label="Videos" data-target="video" onclick="scrollTo('s-video')"></div>
+  <div class="side-dot" data-label="Redes Sociales" data-target="social" onclick="scrollTo('s-social')"></div>
+  <div class="side-dot" data-label="Consumidor" data-target="consumer" onclick="scrollTo('s-consumer')"></div>
+  <div class="side-dot" data-label="Packaging" data-target="pack" onclick="scrollTo('s-pack')"></div>
+  <div class="side-dot" data-label="ROI & Ventas" data-target="roi" onclick="scrollTo('s-roi')"></div>
+  <div class="side-dot" data-label="TikTok" data-target="tiktok" onclick="scrollTo('s-tiktok')"></div>
+  <div class="side-dot" data-label="Influencers" data-target="inf" onclick="scrollTo('s-inf')"></div>
+</nav>
+
+<nav>
+  <a class="nav-logo" href="index.html">Paola Chávez</a>
+  <a class="nav-back" href="index.html">← Volver al portafolio</a>
+</nav>
+
+<!-- ════════════════ HERO ════════════════ -->
+<div class="project-hero" id="s-hero">
+  <div class="project-hero-bg">
+    <!-- CAMBIA src por tu imagen principal: images/laislaescondida-hero.jpg -->
+    <img class="project-hero-img" src="images/laislaescondida-hero.jpg" alt="La Isla Escondida"
+         onerror="this.style.opacity='0'">
+    <div class="project-hero-gradient"></div>
+  </div>
+  <div class="project-hero-content">
+    <div class="project-back-tag">Gastronomía · Branding · Marketing Digital</div>
+    <h1 class="project-title">La Isla<br>Escondida</h1>
+    <p class="project-tagline">Identidad de marca completa, estrategia digital y campaña gastronómica — de cero a 500K en ventas.</p>
+    <div class="scroll-hint"><div class="scroll-line"></div>Desplázate para ver el caso completo</div>
+  </div>
+</div>
+
+<!-- META -->
+<div class="project-meta reveal">
+  <div class="meta-item"><div class="meta-label">Cliente</div><div class="meta-value">La Isla Escondida</div></div>
+  <div class="meta-item"><div class="meta-label">Período</div><div class="meta-value">Feb 2014 — Abr 2015</div></div>
+  <div class="meta-item"><div class="meta-label">Servicios</div><div class="meta-value">Branding · Social Media · Packaging · TikTok</div></div>
+  <div class="meta-item"><div class="meta-label">ROI Físico</div><div class="meta-value" style="color:var(--green)">90% — S/. 500K</div></div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ DISEÑO GRÁFICO ════════════════ -->
+<div class="sec reveal" id="s-design">
+  <div class="sec-label">✦ 01 — Diseño Gráfico</div>
+  <h2 class="sec-title">Identidad Visual & Diseño</h2>
+  <div class="sec-body">
+    <p>Desarrollo completo de identidad visual: logotipo, paleta de colores, tipografías, manual de marca, papelería, menús y piezas gráficas para todos los puntos de contacto.</p>
+  </div>
+
+  <div class="design-grid">
+    <!-- ═══ CAMBIA CADA src POR TU IMAGEN ═══ -->
+    <!-- Formato sugerido: images/laislad-logo.jpg, images/laislad-menu.jpg, etc. -->
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-logo.jpg" alt="Logo"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">🎨</span>
+          <span class="img-ph-text">Sube: images/laislad-logo.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Logo & Marca</div>
+        <div class="design-card-name">Logotipo principal y variantes</div>
+      </div>
+    </div>
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-paleta.jpg" alt="Paleta"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">🎨</span>
+          <span class="img-ph-text">Sube: images/laislad-paleta.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Identidad Visual</div>
+        <div class="design-card-name">Paleta de colores y tipografías</div>
+      </div>
+    </div>
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-menu.jpg" alt="Menú"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">🍽️</span>
+          <span class="img-ph-text">Sube: images/laislad-menu.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Diseño Editorial</div>
+        <div class="design-card-name">Menú y carta gastronómica</div>
+      </div>
+    </div>
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-papeleria.jpg" alt="Papelería"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">📄</span>
+          <span class="img-ph-text">Sube: images/laislad-papeleria.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Papelería</div>
+        <div class="design-card-name">Tarjetas, sobres y materiales</div>
+      </div>
+    </div>
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-piezas.jpg" alt="Piezas"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">📱</span>
+          <span class="img-ph-text">Sube: images/laislad-piezas.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Redes Sociales</div>
+        <div class="design-card-name">Piezas gráficas para digital</div>
+      </div>
+    </div>
+
+    <div class="design-card reveal">
+      <div class="design-card-img">
+        <img src="images/laislad-manual.jpg" alt="Manual"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="design-card-placeholder img-ph" style="display:none">
+          <span class="img-ph-icon">📖</span>
+          <span class="img-ph-text">Sube: images/laislad-manual.jpg</span>
+        </div>
+      </div>
+      <div class="design-card-info">
+        <div class="design-card-label">Manual de Marca</div>
+        <div class="design-card-name">Brand guidelines completo</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ VIDEOS ════════════════ -->
+<div class="sec reveal" id="s-video">
+  <div class="sec-label">✦ 02 — Videos</div>
+  <h2 class="sec-title">Producción Audiovisual</h2>
+  <div class="sec-body">
+    <p>Producción de contenido en video para campañas digitales, reels y spots publicitarios de la marca.</p>
+  </div>
+
+  <div class="video-grid">
+    <!-- ═══ PEGA TU URL DE YOUTUBE/VIMEO EN src del iframe ═══ -->
+    <!-- Formato YouTube embed: https://www.youtube.com/embed/TU_VIDEO_ID -->
+    <!-- Formato Vimeo embed: https://player.vimeo.com/video/TU_VIDEO_ID -->
+
+    <div class="video-card reveal">
+      <div class="video-embed">
+        <!-- DESCOMENTA Y REEMPLAZA con tu URL de YouTube/Vimeo:
+        <iframe src="https://www.youtube.com/embed/TU_VIDEO_ID_1" allowfullscreen></iframe>
+        -->
+        <div class="video-placeholder">
+          <div class="video-play-icon">▶</div>
+          <div class="video-ph-text">Pega tu URL de YouTube/Vimeo aquí<br><small style="opacity:.5">iframe src="https://youtube.com/embed/ID"</small></div>
+        </div>
+      </div>
+      <div class="video-card-info">
+        <div class="video-card-label">Spot Publicitario</div>
+        <div class="video-card-title">Video Campaña Principal 2014</div>
+        <div class="video-card-views">✦ Edita con el título y métricas reales</div>
+      </div>
+    </div>
+
+    <div class="video-card reveal">
+      <div class="video-embed">
+        <!-- DESCOMENTA Y REEMPLAZA:
+        <iframe src="https://www.youtube.com/embed/TU_VIDEO_ID_2" allowfullscreen></iframe>
+        -->
+        <div class="video-placeholder">
+          <div class="video-play-icon">▶</div>
+          <div class="video-ph-text">Pega tu URL de YouTube/Vimeo aquí</div>
+        </div>
+      </div>
+      <div class="video-card-info">
+        <div class="video-card-label">Reel de Marca</div>
+        <div class="video-card-title">Video Behind the Scenes</div>
+        <div class="video-card-views">✦ Edita con el título y métricas reales</div>
+      </div>
+    </div>
+
+    <div class="video-card reveal">
+      <div class="video-embed">
+        <div class="video-placeholder">
+          <div class="video-play-icon">▶</div>
+          <div class="video-ph-text">Pega tu URL de YouTube/Vimeo aquí</div>
+        </div>
+      </div>
+      <div class="video-card-info">
+        <div class="video-card-label">Campaña Digital</div>
+        <div class="video-card-title">Video Producto 2015</div>
+        <div class="video-card-views">✦ Edita con el título y métricas reales</div>
+      </div>
+    </div>
+
+    <div class="video-card reveal">
+      <div class="video-embed">
+        <div class="video-placeholder">
+          <div class="video-play-icon">▶</div>
+          <div class="video-ph-text">Pega tu URL de YouTube/Vimeo aquí</div>
+        </div>
+      </div>
+      <div class="video-card-info">
+        <div class="video-card-label">Testimonial</div>
+        <div class="video-card-title">Video Cliente / Reseña</div>
+        <div class="video-card-views">✦ Edita con el título y métricas reales</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ REDES SOCIALES ════════════════ -->
+<div class="sec reveal" id="s-social">
+  <div class="sec-label">✦ 03 — Redes Sociales</div>
+  <h2 class="sec-title">Impacto Digital</h2>
+
+  <!-- STATS OVERVIEW -->
+  <!-- ═══ EDITA ESTOS NÚMEROS con tus datos reales ═══ -->
+  <div class="stats-overview">
+    <div class="stat-box reveal">
+      <div class="stat-box-num">↑85%</div>
+      <div class="stat-box-label">Crecimiento de seguidores</div>
+    </div>
+    <div class="stat-box reveal">
+      <div class="stat-box-num">3.2x</div>
+      <div class="stat-box-label">Aumento en engagement</div>
+    </div>
+    <div class="stat-box reveal">
+      <div class="stat-box-num">120K</div>
+      <div class="stat-box-label">Alcance mensual promedio</div>
+    </div>
+    <div class="stat-box reveal">
+      <div class="stat-box-num">14M</div>
+      <div class="stat-box-label">Impresiones totales</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO SEGUIDORES -->
+  <div class="chart-wrap reveal">
+    <div class="chart-title">Crecimiento de Seguidores</div>
+    <div class="chart-sub">Febrero 2014 — Abril 2015 · Instagram + Facebook</div>
+    <!-- ═══ EDITA los datos en el script más abajo (busca "CHART DATA") ═══ -->
+    <div class="chart-canvas-wrap"><canvas id="chartSeguidores"></canvas></div>
+  </div>
+
+  <!-- GRÁFICO ENGAGEMENT -->
+  <div class="chart-wrap reveal" style="margin-top:1.5rem">
+    <div class="chart-title">Engagement Rate Mensual (%)</div>
+    <div class="chart-sub">Interacciones / Alcance por mes</div>
+    <div class="chart-canvas-wrap"><canvas id="chartEngagement"></canvas></div>
+  </div>
+
+  <!-- GRÁFICO ALCANCE -->
+  <div class="chart-wrap reveal" style="margin-top:1.5rem">
+    <div class="chart-title">Alcance vs Impresiones</div>
+    <div class="chart-sub">Personas únicas alcanzadas vs veces que se vio el contenido</div>
+    <div class="chart-canvas-wrap"><canvas id="chartAlcance"></canvas></div>
+  </div>
+
+  <!-- GALLERY POSTS -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;color:var(--white);margin-top:3rem;margin-bottom:1rem">Posts Destacados</h3>
+  <div class="gallery-masonry">
+    <!-- ═══ SUBE TUS CAPTURAS DE POSTS A images/ ═══ -->
+    <div class="gal-item gal-tall reveal">
+      <img src="images/laisla-post-01.jpg" alt="Post destacado"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:300px><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-01.jpg</span></div>')">
+    </div>
+    <div class="gal-item reveal">
+      <img src="images/laisla-post-02.jpg" alt="Post"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-02.jpg</span></div>')">
+    </div>
+    <div class="gal-item reveal">
+      <img src="images/laisla-post-03.jpg" alt="Post"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-03.jpg</span></div>')">
+    </div>
+    <div class="gal-item gal-wide reveal">
+      <img src="images/laisla-post-04.jpg" alt="Post"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-04.jpg</span></div>')">
+    </div>
+    <div class="gal-item reveal">
+      <img src="images/laisla-post-05.jpg" alt="Post"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-05.jpg</span></div>')">
+    </div>
+    <div class="gal-item reveal">
+      <img src="images/laisla-post-06.jpg" alt="Post"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>📱</span><span class=img-ph-text>images/laisla-post-06.jpg</span></div>')">
+    </div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ PERFIL DEL CONSUMIDOR ════════════════ -->
+<div class="sec reveal" id="s-consumer">
+  <div class="sec-label">✦ 04 — Perfil del Consumidor</div>
+  <h2 class="sec-title">¿A quién le habla la marca?</h2>
+
+  <!-- BUYER PERSONA -->
+  <div class="persona-wrap reveal">
+    <div class="persona-avatar">
+      <!-- CAMBIA src por foto del perfil de consumidor -->
+      <img src="images/laisla-persona.jpg" alt="Buyer Persona"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="persona-avatar-ph" style="display:none">👤</div>
+    </div>
+    <div class="persona-details">
+      <!-- ═══ EDITA con datos reales de tu investigación ═══ -->
+      <div class="persona-name">María, 28 años</div>
+      <div class="persona-age">NSE B–C · Lima Metropolitana · Trabajadora dependiente</div>
+      <div class="persona-traits">
+        <span class="persona-trait">Foodie</span>
+        <span class="persona-trait">Instagram activa</span>
+        <span class="persona-trait">Delivery 3x/semana</span>
+        <span class="persona-trait">Busca experiencias</span>
+        <span class="persona-trait">Ticket S/. 45–80</span>
+      </div>
+      <div class="persona-quote">"Quiero un lugar que se vea bien en fotos, que sea rico y que llegue rápido a mi casa."</div>
+    </div>
+  </div>
+
+  <div class="consumer-grid" style="margin-top:2rem">
+    <div class="consumer-card reveal">
+      <div class="consumer-card-icon">🎯</div>
+      <div class="consumer-card-title">Motivaciones</div>
+      <ul class="consumer-card-body">
+        <!-- ═══ EDITA con tus datos reales ═══ -->
+        <li>Busca experiencias gastronómicas únicas</li>
+        <li>Comparte su vida en redes sociales</li>
+        <li>Valora la presentación y el empaque</li>
+        <li>Prefiere marcas con identidad clara</li>
+        <li>Fidelidad a marcas que generan emoción</li>
+      </ul>
+    </div>
+    <div class="consumer-card reveal">
+      <div class="consumer-card-icon">📱</div>
+      <div class="consumer-card-title">Comportamiento Digital</div>
+      <ul class="consumer-card-body">
+        <li>Activa en Instagram y TikTok</li>
+        <li>Busca restaurantes en Google Maps</li>
+        <li>Lee reseñas antes de comprar</li>
+        <li>Responde a descuentos y combos</li>
+        <li>Comparte unboxing y delivery</li>
+      </ul>
+    </div>
+    <div class="consumer-card reveal">
+      <div class="consumer-card-icon">💬</div>
+      <div class="consumer-card-title">Pain Points</div>
+      <ul class="consumer-card-body">
+        <li>Desconfianza en marcas sin presencia digital</li>
+        <li>Mala presentación en delivery</li>
+        <li>Tiempos de espera largos</li>
+        <li>Poca variedad de medios de pago</li>
+        <li>Contenido aburrido y sin personalidad</li>
+      </ul>
+    </div>
+    <div class="consumer-card reveal">
+      <div class="consumer-card-icon">🏆</div>
+      <div class="consumer-card-title">Cómo la marca conectó</div>
+      <ul class="consumer-card-body">
+        <li>Estética coherente y reconocible</li>
+        <li>Contenido aspiracional pero accesible</li>
+        <li>Packaging instagrameable para delivery</li>
+        <li>Alianzas con influencers de confianza</li>
+        <li>Respuesta activa en comentarios</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ PACKAGING / DELIVERY ════════════════ -->
+<div class="sec reveal" id="s-pack">
+  <div class="sec-label">✦ 05 — Packaging & Delivery</div>
+  <h2 class="sec-title">Modelo de Packs para Delivery</h2>
+  <div class="sec-body">
+    <p>Diseño de packaging para consumo delivery: cajas, bolsas, etiquetas y presentación de producto. Cada pieza diseñada para ser instagrameable y reforzar la identidad de marca.</p>
+  </div>
+
+  <div class="pack-grid">
+    <!-- ═══ SUBE TUS FOTOS DE PACKS A images/ ═══ -->
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-01.jpg" alt="Pack 1"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-01.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Caja Principal — Pack Básico</div>
+    </div>
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-02.jpg" alt="Pack 2"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-02.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Pack Familiar — Combo x4</div>
+    </div>
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-03.jpg" alt="Pack 3"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-03.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Bolsa de Entrega Personalizada</div>
+    </div>
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-04.jpg" alt="Pack 4"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-04.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Etiquetas y Sellos de Marca</div>
+    </div>
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-05.jpg" alt="Pack 5"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-05.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Pack Premium — Edición Especial</div>
+    </div>
+    <div class="pack-item reveal">
+      <div class="pack-img">
+        <img src="images/laisla-pack-06.jpg" alt="Pack 6"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:220px><span class=img-ph-icon>📦</span><span class=img-ph-text>images/laisla-pack-06.jpg</span></div>')">
+      </div>
+      <div class="pack-label">Unboxing Experience</div>
+    </div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ ROI & VENTAS ════════════════ -->
+<div class="sec reveal" id="s-roi">
+  <div class="sec-label">✦ 06 — ROI & Ventas</div>
+  <h2 class="sec-title">Impacto en Ventas Digitales & Físicas</h2>
+
+  <!-- ROI HERO -->
+  <div class="roi-hero reveal">
+    <div class="roi-main-num">90%</div>
+    <div class="roi-main-label">Retorno sobre la inversión (ROI) en ventas físicas</div>
+    <div class="roi-sub">S/. 500,000 en ventas — Mayo 2014</div>
+  </div>
+
+  <!-- VENTAS GRID -->
+  <div class="sales-grid">
+    <div class="sales-card reveal">
+      <div class="sales-card-num">S/. 500K</div>
+      <div class="sales-card-label">Ventas físicas Mayo 2014</div>
+      <div class="sales-card-sub">Primer mes con ganancia neta positiva</div>
+    </div>
+    <div class="sales-card reveal">
+      <div class="sales-card-num">↑ 3x</div>
+      <div class="sales-card-label">Crecimiento ventas digitales</div>
+      <div class="sales-card-sub">Vs. período anterior al branding</div>
+    </div>
+    <div class="sales-card reveal">
+      <div class="sales-card-num">90%</div>
+      <div class="sales-card-label">ROI inversión en marca</div>
+      <div class="sales-card-sub">Recuperación total en 3 meses</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO VENTAS MENSUALES -->
+  <div class="chart-wrap reveal" style="margin-top:2rem">
+    <div class="chart-title">Ventas Mensuales — Físicas vs Digitales</div>
+    <div class="chart-sub">Febrero 2014 — Abril 2015 · En miles de soles (S/.) · Edita los datos en el script</div>
+    <div class="chart-canvas-wrap"><canvas id="chartVentas"></canvas></div>
+  </div>
+
+  <!-- GRÁFICO ROI -->
+  <div class="chart-wrap reveal" style="margin-top:1.5rem">
+    <div class="chart-title">Evolución del ROI Mensual (%)</div>
+    <div class="chart-sub">Retorno sobre inversión acumulado mes a mes</div>
+    <div class="chart-canvas-wrap"><canvas id="chartROI"></canvas></div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ TIKTOK ════════════════ -->
+<div class="sec reveal" id="s-tiktok">
+  <div class="sec-label">✦ 07 — TikTok</div>
+  <h2 class="sec-title">Videos Virales</h2>
+  <div class="sec-body">
+    <p>Producción y estrategia de contenido para TikTok. Videos virales realizados, detrás de cámara y proceso creativo.</p>
+  </div>
+
+  <div class="tiktok-grid">
+    <!-- ═══ CADA CARD: pon thumb (imagen), views, descripción y enlace al video ═══ -->
+
+    <div class="tiktok-card reveal">
+      <div class="tiktok-thumb">
+        <img src="images/laisla-tiktok-01.jpg" alt="TikTok viral"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:280px><span class=img-ph-icon>🎵</span><span class=img-ph-text>images/laisla-tiktok-01.jpg</span></div>')">
+        <div class="tiktok-play-btn"><div class="tiktok-play">▶</div></div>
+      </div>
+      <div class="tiktok-info">
+        <!-- ═══ EDITA: views, descripción y enlace ═══ -->
+        <div class="tiktok-views">1.2M views</div>
+        <div class="tiktok-desc">Video viral — nombre del video o descripción</div>
+        <a class="tiktok-link" href="https://www.tiktok.com/@TU_USUARIO/video/ID_VIDEO" target="_blank">Ver en TikTok →</a>
+      </div>
+    </div>
+
+    <div class="tiktok-card reveal">
+      <div class="tiktok-thumb">
+        <img src="images/laisla-tiktok-02.jpg" alt="TikTok"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:280px><span class=img-ph-icon>🎵</span><span class=img-ph-text>images/laisla-tiktok-02.jpg</span></div>')">
+        <div class="tiktok-play-btn"><div class="tiktok-play">▶</div></div>
+      </div>
+      <div class="tiktok-info">
+        <div class="tiktok-views">850K views</div>
+        <div class="tiktok-desc">Video — nombre o descripción</div>
+        <a class="tiktok-link" href="https://www.tiktok.com/@TU_USUARIO/video/ID_VIDEO" target="_blank">Ver en TikTok →</a>
+      </div>
+    </div>
+
+    <div class="tiktok-card reveal">
+      <div class="tiktok-thumb">
+        <img src="images/laisla-tiktok-03.jpg" alt="TikTok"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:280px><span class=img-ph-icon>🎵</span><span class=img-ph-text>images/laisla-tiktok-03.jpg</span></div>')">
+        <div class="tiktok-play-btn"><div class="tiktok-play">▶</div></div>
+      </div>
+      <div class="tiktok-info">
+        <div class="tiktok-views">600K views</div>
+        <div class="tiktok-desc">Video — nombre o descripción</div>
+        <a class="tiktok-link" href="https://www.tiktok.com/@TU_USUARIO/video/ID_VIDEO" target="_blank">Ver en TikTok →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETRÁS DE CÁMARA -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;color:var(--white);margin-top:3.5rem;margin-bottom:.5rem">Detrás de Cámara</h3>
+  <p style="font-size:13.5px;color:var(--muted);margin-bottom:1.5rem">Proceso creativo, producción y making of de los videos virales.</p>
+  <div class="bts-grid">
+    <div class="bts-item reveal"><img src="images/laisla-bts-01.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-01</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-02.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-02</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-03.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-03</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-04.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-04</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-05.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-05</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-06.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-06</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-07.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-07</span></div>')"></div>
+    <div class="bts-item reveal"><img src="images/laisla-bts-08.jpg" alt="BTS" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🎬</span><span class=img-ph-text>laisla-bts-08</span></div>')"></div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<!-- ════════════════ INFLUENCERS ════════════════ -->
+<div class="sec reveal" id="s-inf">
+  <div class="sec-label">✦ 08 — Alianzas con Influencers</div>
+  <h2 class="sec-title">Artistas & Embajadores</h2>
+  <div class="sec-body">
+    <p>Alianzas estratégicas con influencers y artistas para amplificar el alcance de la marca y generar contenido auténtico.</p>
+  </div>
+
+  <div class="influencer-grid">
+    <!-- ═══ PARA CADA INFLUENCER: pon su foto, nombre, handle, alcance y enlace ═══ -->
+    <!-- Sube sus fotos a images/: laisla-inf-01.jpg, laisla-inf-02.jpg, etc. -->
+
+    <a class="influencer-card reveal" href="https://www.instagram.com/HANDLE_INFLUENCER_1" target="_blank">
+      <div class="influencer-photo">
+        <img src="images/laisla-inf-01.jpg" alt="Influencer 1"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:200px><span class=img-ph-icon>🌟</span><span class=img-ph-text>images/laisla-inf-01.jpg</span></div>')">
+      </div>
+      <div class="influencer-info">
+        <!-- ═══ EDITA con el nombre real ═══ -->
+        <div class="influencer-name">Nombre del Artista</div>
+        <div class="influencer-handle">@handle_instagram</div>
+        <div class="influencer-reach">150K seguidores · 8% engagement</div>
+      </div>
+    </a>
+
+    <a class="influencer-card reveal" href="https://www.instagram.com/HANDLE_INFLUENCER_2" target="_blank">
+      <div class="influencer-photo">
+        <img src="images/laisla-inf-02.jpg" alt="Influencer 2"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:200px><span class=img-ph-icon>🌟</span><span class=img-ph-text>images/laisla-inf-02.jpg</span></div>')">
+      </div>
+      <div class="influencer-info">
+        <div class="influencer-name">Nombre del Artista</div>
+        <div class="influencer-handle">@handle_instagram</div>
+        <div class="influencer-reach">90K seguidores · 12% engagement</div>
+      </div>
+    </a>
+
+    <a class="influencer-card reveal" href="https://www.instagram.com/HANDLE_INFLUENCER_3" target="_blank">
+      <div class="influencer-photo">
+        <img src="images/laisla-inf-03.jpg" alt="Influencer 3"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:200px><span class=img-ph-icon>🌟</span><span class=img-ph-text>images/laisla-inf-03.jpg</span></div>')">
+      </div>
+      <div class="influencer-info">
+        <div class="influencer-name">Nombre del Artista</div>
+        <div class="influencer-handle">@handle_instagram</div>
+        <div class="influencer-reach">200K seguidores · 6% engagement</div>
+      </div>
+    </a>
+
+    <a class="influencer-card reveal" href="https://www.instagram.com/HANDLE_INFLUENCER_4" target="_blank">
+      <div class="influencer-photo">
+        <img src="images/laisla-inf-04.jpg" alt="Influencer 4"
+             onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph style=min-height:200px><span class=img-ph-icon>🌟</span><span class=img-ph-text>images/laisla-inf-04.jpg</span></div>')">
+      </div>
+      <div class="influencer-info">
+        <div class="influencer-name">Nombre del Artista</div>
+        <div class="influencer-handle">@handle_instagram</div>
+        <div class="influencer-reach">75K seguidores · 15% engagement</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- FOTOS CON ARTISTAS / COLABORACIONES -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;color:var(--white);margin-top:3.5rem;margin-bottom:.5rem">Fotos de Colaboraciones</h3>
+  <div class="gallery-masonry">
+    <div class="gal-item gal-wide reveal"><img src="images/laisla-collab-01.jpg" alt="Collab" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🤝</span><span class=img-ph-text>laisla-collab-01.jpg</span></div>')"></div>
+    <div class="gal-item reveal"><img src="images/laisla-collab-02.jpg" alt="Collab" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🤝</span><span class=img-ph-text>laisla-collab-02.jpg</span></div>')"></div>
+    <div class="gal-item reveal"><img src="images/laisla-collab-03.jpg" alt="Collab" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🤝</span><span class=img-ph-text>laisla-collab-03.jpg</span></div>')"></div>
+    <div class="gal-item reveal"><img src="images/laisla-collab-04.jpg" alt="Collab" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🤝</span><span class=img-ph-text>laisla-collab-04.jpg</span></div>')"></div>
+    <div class="gal-item gal-wide reveal"><img src="images/laisla-collab-05.jpg" alt="Collab" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=img-ph><span class=img-ph-icon>🤝</span><span class=img-ph-text>laisla-collab-05.jpg</span></div>')"></div>
+  </div>
+</div>
+
+<div class="neon-divider"></div>
+
+<div class="project-nav">
+  <a class="project-nav-btn" href="index.html">← Todos los proyectos</a>
+  <a class="project-nav-btn" href="quepotaza.html">Siguiente: ¡Qué Potaza! →</a>
+</div>
+
+<footer>
+  <span class="footer-logo">Paola Chávez Bohorquez</span>
+  <span class="footer-copy">© 2025 · Lima, Perú · Gestora de Marca</span>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close" onclick="closeLB()">✕</span>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// CHART DATA — EDITA ESTOS NÚMEROS CON LOS REALES
+// ════════════════════════════════════════════════
+const MESES = ['Feb 14','Mar 14','Abr 14','May 14','Jun 14','Jul 14','Ago 14','Sep 14','Oct 14','Nov 14','Dic 14','Ene 15','Feb 15','Mar 15','Abr 15'];
+
+// Seguidores acumulados
+const SEG_IG    = [1200,1800,2600,4200,5800,7500,9200,11000,13500,16000,19000,22000,25500,29000,33000];
+const SEG_FB    = [800, 1200,1900,3000,4100,5400,6800,8300, 9900, 11800,14000,16500,19000,21500,24000];
+
+// Engagement rate %
+const ENG_RATE  = [2.1,2.4,3.1,4.2,3.8,4.5,5.1,4.8,5.6,6.2,5.8,6.5,7.1,6.8,7.5];
+
+// Alcance vs Impresiones (miles)
+const ALCANCE   = [3.2,4.8,7.1,12.5,15.8,20.3,25.1,29.8,35.2,42.1,50.0,58.5,68.2,78.9,90.3];
+const IMPRESIONES=[8.5,13,19,32,41,54,67,79,94,112,133,156,182,210,240];
+
+// Ventas (miles de soles)
+const VENTAS_FIS=[80,120,180,500,420,380,340,310,290,350,480,520,440,380,420];
+const VENTAS_DIG=[15,28,45,95,88,102,118,125,140,162,195,220,198,215,240];
+
+// ROI %
+const ROI_DATA  = [20,32,48,90,85,78,72,68,65,70,82,88,84,79,83];
+
+const CHART_OPTS = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'rgba(245,240,255,.6)',font:{size:11}}},tooltip:{backgroundColor:'rgba(13,13,26,.9)',titleColor:'#F5F0FF',bodyColor:'rgba(245,240,255,.7)',borderColor:'rgba(255,61,127,.3)',borderWidth:1}},
+  scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'rgba(245,240,255,.45)',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'rgba(245,240,255,.45)',font:{size:10}}}}
+};
+
+function makeGrad(ctx,c1,c2){
+  const g=ctx.createLinearGradient(0,0,0,280);
+  g.addColorStop(0,c1);g.addColorStop(1,c2);return g;
+}
+
+// CHART 1 — SEGUIDORES
+new Chart(document.getElementById('chartSeguidores'),{type:'line',data:{labels:MESES,datasets:[
+  {label:'Instagram',data:SEG_IG,borderColor:'#FF3D7F',backgroundColor:'rgba(255,61,127,.08)',tension:.4,pointRadius:3,pointBackgroundColor:'#FF3D7F'},
+  {label:'Facebook', data:SEG_FB,borderColor:'#00E5CC',backgroundColor:'rgba(0,229,204,.06)',tension:.4,pointRadius:3,pointBackgroundColor:'#00E5CC'}
+]},options:{...CHART_OPTS}});
+
+// CHART 2 — ENGAGEMENT
+new Chart(document.getElementById('chartEngagement'),{type:'bar',data:{labels:MESES,datasets:[
+  {label:'Engagement %',data:ENG_RATE,backgroundColor:MESES.map((_,i)=>`hsl(${300+i*8},90%,60%)`),borderRadius:3}
+]},options:{...CHART_OPTS}});
+
+// CHART 3 — ALCANCE
+new Chart(document.getElementById('chartAlcance'),{type:'line',data:{labels:MESES,datasets:[
+  {label:'Alcance (k)',data:ALCANCE,borderColor:'#B44FFF',backgroundColor:'rgba(180,79,255,.08)',tension:.4,fill:true,pointRadius:3},
+  {label:'Impresiones (k)',data:IMPRESIONES,borderColor:'#FFD166',backgroundColor:'rgba(255,209,102,.05)',tension:.4,fill:false,pointRadius:3}
+]},options:{...CHART_OPTS}});
+
+// CHART 4 — VENTAS
+new Chart(document.getElementById('chartVentas'),{type:'bar',data:{labels:MESES,datasets:[
+  {label:'Ventas Físicas (S/. miles)',data:VENTAS_FIS,backgroundColor:'rgba(255,61,127,.7)',borderRadius:3},
+  {label:'Ventas Digitales (S/. miles)',data:VENTAS_DIG,backgroundColor:'rgba(0,229,204,.55)',borderRadius:3}
+]},options:{...CHART_OPTS,scales:{...CHART_OPTS.scales,x:{...CHART_OPTS.scales.x,stacked:false},y:{...CHART_OPTS.scales.y,stacked:false}}}});
+
+// CHART 5 — ROI
+new Chart(document.getElementById('chartROI'),{type:'line',data:{labels:MESES,datasets:[
+  {label:'ROI (%)',data:ROI_DATA,borderColor:'#3DFF8F',backgroundColor:'rgba(61,255,143,.1)',tension:.4,fill:true,pointRadius:4,pointBackgroundColor:'#3DFF8F',pointBorderColor:'#080810',pointBorderWidth:2}
+]},options:{...CHART_OPTS}});
+
+// GALAXY
+const starsCanvas=document.getElementById('stars-canvas'),sCtx=starsCanvas.getContext('2d');
+let SW,SH;
+function rS(){SW=starsCanvas.width=window.innerWidth;SH=starsCanvas.height=window.innerHeight;}
+rS();window.addEventListener('resize',rS);
+const SCOLS=['#FF3D7F','#00E5CC','#B44FFF','#FFD166','#3DFF8F','#fff','#3D8FFF'];
+const stars=Array.from({length:250},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.8+.2,a:Math.random(),da:(Math.random()-.5)*.008,color:SCOLS[Math.floor(Math.random()*SCOLS.length)]}));
+const meteors=[];const MCOLS=['#FF3D7F','#00E5CC','#B44FFF','#FFD166','#3DFF8F','#FF7A3D','#3D8FFF'];
+function spawnM(){meteors.push({x:Math.random()*SW*1.5,y:-20,len:80+Math.random()*180,speed:6+Math.random()*10,angle:Math.PI/4+(Math.random()-.5)*.3,color:MCOLS[Math.floor(Math.random()*MCOLS.length)],a:1,width:1.5+Math.random()*2});}
+setInterval(spawnM,220);
+function drawG(){sCtx.clearRect(0,0,SW,SH);stars.forEach(s=>{s.a+=s.da;if(s.a>1||s.a<.1)s.da*=-1;sCtx.beginPath();sCtx.arc(s.x,s.y,s.r,0,Math.PI*2);sCtx.fillStyle=s.color;sCtx.globalAlpha=s.a*.8;sCtx.shadowBlur=s.r>1.2?6:0;sCtx.shadowColor=s.color;sCtx.fill();sCtx.globalAlpha=1;sCtx.shadowBlur=0;});for(let i=meteors.length-1;i>=0;i--){const m=meteors[i];const tx=m.x-Math.cos(m.angle)*m.len,ty=m.y-Math.sin(m.angle)*m.len;const g=sCtx.createLinearGradient(m.x,m.y,tx,ty);g.addColorStop(0,m.color);g.addColorStop(1,'transparent');sCtx.beginPath();sCtx.moveTo(m.x,m.y);sCtx.lineTo(tx,ty);sCtx.strokeStyle=g;sCtx.lineWidth=m.width;sCtx.globalAlpha=m.a*.85;sCtx.shadowBlur=8;sCtx.shadowColor=m.color;sCtx.stroke();sCtx.globalAlpha=1;sCtx.shadowBlur=0;m.x+=Math.cos(m.angle)*m.speed;m.y+=Math.sin(m.angle)*m.speed;m.a-=.012;if(m.a<=0||m.y>SH+100)meteors.splice(i,1);}requestAnimationFrame(drawG);}
+drawG();
+
+// ORBS
+const bgCanvas=document.getElementById('bg-canvas'),bCtx=bgCanvas.getContext('2d');let BW,BH;
+function rB(){BW=bgCanvas.width=window.innerWidth;BH=bgCanvas.height=window.innerHeight;}
+rB();window.addEventListener('resize',rB);
+const OCOLS=[[255,61,127],[0,229,204],[180,79,255],[255,209,102],[61,255,143]];
+const orbs=Array.from({length:7},(_,i)=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:150+Math.random()*180,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,color:OCOLS[i%OCOLS.length],a:.04+Math.random()*.06}));
+function drawO(){bCtx.clearRect(0,0,BW,BH);orbs.forEach(o=>{o.x+=o.vx;o.y+=o.vy;if(o.x<-o.r)o.x=BW+o.r;if(o.x>BW+o.r)o.x=-o.r;if(o.y<-o.r)o.y=BH+o.r;if(o.y>BH+o.r)o.y=-o.r;const g=bCtx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);g.addColorStop(0,`rgba(${o.color[0]},${o.color[1]},${o.color[2]},${o.a})`);g.addColorStop(1,`rgba(${o.color[0]},${o.color[1]},${o.color[2]},0)`);bCtx.fillStyle=g;bCtx.beginPath();bCtx.arc(o.x,o.y,o.r,0,Math.PI*2);bCtx.fill();});requestAnimationFrame(drawO);}
+drawO();
+
+// CURSOR
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';setTimeout(()=>{curR.style.left=e.clientX+'px';curR.style.top=e.clientY+'px';},70);});
+
+// REVEAL
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.06});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// SIDE NAV SCROLL
+function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
+window.addEventListener('scroll',()=>{
+  const ids=['s-hero','s-design','s-video','s-social','s-consumer','s-pack','s-roi','s-tiktok','s-inf'];
+  const dots=document.querySelectorAll('.side-dot');
+  let active=0;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<window.innerHeight/2)active=i;});
+  dots.forEach((d,i)=>d.classList.toggle('active',i===active));
+});
+
+// LIGHTBOX
+document.querySelectorAll('.gal-item img, .pack-img img, .bts-item img, .design-card-img img').forEach(img=>{
+  img.addEventListener('click',()=>{document.getElementById('lb-img').src=img.src;document.getElementById('lightbox').classList.add('active');});
+});
+function closeLB(){document.getElementById('lightbox').classList.remove('active');}
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===e.currentTarget)closeLB();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB();});
+</script>
+</body>
+</html>
